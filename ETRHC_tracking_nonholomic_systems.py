@@ -81,17 +81,17 @@ currentState, w_r, v_r):
     ################# system dynamics ##################
     ####################################################
     # Declare model variables
-    x_e = SX.sym('x_e')
-    y_e = SX.sym('y_e')
-    theta_e = SX.sym('theta_e')
+    x_e = MX.sym('x_e')
+    y_e = MX.sym('y_e')
+    theta_e = MX.sym('theta_e')
     x = vertcat(x_e, y_e, theta_e)
-    u1 = SX.sym('u1')
-    u2 = SX.sym('u2')
-    v_r = SX(v_r)
-    w_r = SX(w_r)
+    u1 = MX.sym('u1')
+    u2 = MX.sym('u2')
+    # v_r = MX(v_r)
+    # w_r = SX(w_r)
     u = vertcat(u1, u2)
     # Disturbance
-    d = SX.sym('d')
+    d = MX.sym('d')
     # Nominal Non-holonomic Model -v+v_r*cos(theta_e)
     xdot = vertcat((w_r-u2)*y_e+u1, -(w_r-u2)*x_e+v_r*sin(theta_e), u2)
     # Real Non-holonomic Model
@@ -350,7 +350,6 @@ def main():
         # file.write('ETMPC-TEST #' + str(i+1) + ' ---> ' + 'SampledTimes: ' + str(len(event_sampling_intervals)) + ' EventIntervals: ' + str(event_sampling_intervals) + "\n")
         # file.close()
         
-
     # record the finish time
     endtime = tm.time()
     print 'Running time: ', (endtime - starttime)*1000 , 'ms'
@@ -361,104 +360,6 @@ def main():
     print 'Event sampling instants: ', event_sampling_instants, len(event_sampling_instants)
 
     print 'Event sampling intervals: ', event_sampling_intervals
-
-    # # save to files 
-    # intetcfile = open('intetcfile.npz', 'w+')
-    # np.savez('intetcfile.npz', x1=np.array(states_x1), x2=np.array(states_x2), u=np.array(u_seq))
-    
-    # # start plot everything...  
-    # ######### ~~~~~~~~~~~start plotting~~~~~~~~~~##########
-    # paintingstep = int(round(float(simulationTime)/NDT))
-    # tgrid = [k for k in range(paintingstep)]
-    # fig1 = plt.figure(1)
-    # ax1 = fig1.add_subplot(111)
-    # ax1.plot(tgrid, states_x1, '-.', linewidth=3)
-    # ax1.plot(tgrid, states_x2, '--', linewidth=3)
-    # ax1.plot(tgrid, states_x3, '--', linewidth=3)
-    # ax1.set_xlabel(r'$t(s)$')
-    # ax1.set_xlim([0,paintingstep])
-    # xt1 = np.rint(ax1.get_xticks()*NDT)
-    # ax1.set_xticklabels(xt1.astype(int))
-    # ax1.legend([r'$x_1$',r'$x_2$',r'$\theta$'])
-    # ax1.grid(color='k', linestyle=':')
-
-    # if os.name == 'posix':  
-    #     fig1.savefig('system_trajectory.pdf')
-    # elif os.name == 'nt':
-    #     fig1.show()
-    #     pass
-
-    # fig2 = plt.figure(2)
-    # ax2 = fig2.add_subplot(111)
-    # ax2.plot(tgrid, vertcat(DM.nan(1), u_seq), '-', lw=0.8)
-    # # plt.step(tgrid, vertcat(DM.nan(1), u_seq), '-', lw=1.0)
-    # u_full = np.array(u_seq)
-    # ax2.plot(np.array(event_sampling_instants), u_full[event_sampling_instants], 'x', markersize=8, markeredgewidth=1.2, markerfacecolor='none', markeredgecolor='r')
-    # # plt.plot(tgrid, vertcat(DM.nan(1), u_seq), '-')
-    # ax2.set_xlabel(r'$t(s)$', fontsize=14)
-    # paintingstep = int(round(float(simulationTime)/NDT))
-    # ax2.set_xlim([0,paintingstep])
-    # ax2.set_ylim([-0.2,1.2])
-    # xt2 = np.rint(ax2.get_xticks()*NDT)
-    # ax2.set_xticklabels(xt2.astype(int))
-    # ax2.legend([r'$u$', r'$Triggered\,\,instants$'], fontsize=14)
-    # ax2.grid(color='k', linestyle=':')
-    
-    # if os.name == 'posix':  
-    #     fig2.savefig('control_inputANDevent_triggering_instants.pdf')
-    # elif os.name == 'nt':
-    #     fig2.show()
-    #     pass
-    
-    # fig3 = plt.figure(3)
-    # ax3 = fig3.add_subplot(111)
-    # ax3.plot(tgrid, stagecost_seq, '-', linewidth=3)
-    # ax3.plot(np.array(event_sampling_instants), np.array(stagecost_seq)[event_sampling_instants], 's', markersize=6, markeredgewidth=0.5, markerfacecolor='k', markeredgecolor='k')
-    # ax3.set_xlabel(r'$t(s)$', fontsize=16)
-    # ax3.set_ylabel(r'$J$', fontsize=16)
-    # paintingstep = int(round(float(simulationTime)/NDT))
-    # ax3.set_xlim([0,paintingstep])
-    # xt3 = np.rint(ax3.get_xticks()*NDT)
-    # ax3.set_xticklabels(xt3.astype(int))
-    # ax3.legend(['Stage Cost'])
-    # ax3.grid(color='k', linestyle=':')
-    
-    # if os.name == 'posix':  
-    #     fig3.savefig('cost_trajectory.pdf')
-    # elif os.name == 'nt':
-    #     fig3.show()
-    #     pass
-     
-    # fig4 = plt.figure(4)
-    # ax4 = fig4.add_subplot(111, aspect='equal')
-    # ax4.plot(states_x1_real, states_x2_real, '-', linewidth=3)
-    # ax4.plot(np.array(states_x1_real)[event_sampling_instants], np.array(states_x2_real)[event_sampling_instants], 's', markersize=6, markeredgewidth=0.5, markerfacecolor='k', markeredgecolor='k')
-    # # t4 = np.arange(-4,4,0.1)
-    # # x4 = y4 = np.arange(-0.5, 0.5, 0.01)
-    # # x4, y4 = np.meshgrid(x4,y4)
-    # # ax4.contour(x4, y4, x4**2*P_value[0,0]+y4**2*P_value[1,1]+2*x4*y4*P_value[0,1]-epsilon, [0], colors='magenta', linestyles='dotted')
-    # # ax4.contour(x4, y4, x4**2*P_value[0,0]+y4**2*P_value[1,1]+2*x4*y4*P_value[0,1]-terminal_alpha*epsilon, [0], colors='green', linestyles='dotted')
-    # ax4.set_xlabel(r'$x_1$', fontsize=16)
-    # ax4.set_ylabel(r'$x_2$', fontsize=16)
-    # ax4.legend([r'State'])
-    # # ax4.annotate(r'$\Omega(\epsilon)$',
-    # #      xy=(0.22, 0.25), xycoords='data',
-    # #      xytext=(50, 20), textcoords='offset points', fontsize=16,
-    # #      arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=.2"))
-    # # ax4.annotate(r'$\Omega(\alpha\epsilon)$',
-    # #      xy=(0.075, -0.12), xycoords='data',
-    # #      xytext=(50, -20), textcoords='offset points', fontsize=16,
-    # #      arrowprops=dict(arrowstyle="->", connectionstyle="arc3,rad=-.2"))
-    # ax4.grid(color='k', linestyle=':')
-    
-    # if os.name == 'posix':  
-    #     fig4.savefig('2d_trajectory.pdf')
-    # elif os.name == 'nt':
-    #     fig4.show()
-    #     pass
-
-    # plt.show()
-
 
 if __name__ == '__main__':
     main()
