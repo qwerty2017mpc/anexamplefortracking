@@ -1,30 +1,7 @@
 from __future__ import unicode_literals
-import os
-
-# if os.name == 'posix':
-#     import matplotlib
-#     matplotlib.use('Agg')
-# elif os.name == 'nt':
-#     import sys
-#     # sys.path.append(r"C:\MinGW\msys\1.0\home\jacksun\casadi_install1")
-#     sys.path.append(r"C:\Python27\Lib\site-packages\casadi_install1")
-#     # sys.path.append(r"C:\Python27\Lib\site-packages\casadi-py27-np1.9.1-v3.1.1-64bit")
-#     pass
-
 from casadi import *   
 import numpy as np
 import time as tm
-# import matplotlib
-
-# # matplotlib.rcParams['text.usetex'] = True
-# # matplotlib.rcParams['text.latex.unicode'] = True
-# # matplotlib.rcParams['font.family'] = "Times New Roman"
-# import matplotlib.pyplot as plt
-
-# plt.rc('text', usetex = True)
-# font = {'family':'normal', 'weight': 'normal', 'size': 14}
-# plt.rc('font', **font)
-
 
 def nmpc_cas_ipopt(NDT, T, currentState, F, cost_F, P, terminal_alpha, epsilon, lbx, ubx, lbu, ubu):
     # Start with an empty NLP
@@ -104,17 +81,17 @@ currentState, w_r, v_r):
     ################# system dynamics ##################
     ####################################################
     # Declare model variables
-    x_e = MX.sym('x_e')
-    y_e = MX.sym('y_e')
-    theta_e = MX.sym('theta_e')
+    x_e = SX.sym('x_e')
+    y_e = SX.sym('y_e')
+    theta_e = SX.sym('theta_e')
     x = vertcat(x_e, y_e, theta_e)
-    u1 = MX.sym('u1')
-    u2 = MX.sym('u2')
-    v_r = MX(v_r)
-    w_r = MX(w_r)
+    u1 = SX.sym('u1')
+    u2 = SX.sym('u2')
+    v_r = SX(v_r)
+    w_r = SX(w_r)
     u = vertcat(u1, u2)
     # Disturbance
-    d = MX.sym('d')
+    d = SX.sym('d')
     # Nominal Non-holonomic Model -v+v_r*cos(theta_e)
     xdot = vertcat((w_r-u2)*y_e+u1, -(w_r-u2)*x_e+v_r*sin(theta_e), u2)
     # Real Non-holonomic Model
